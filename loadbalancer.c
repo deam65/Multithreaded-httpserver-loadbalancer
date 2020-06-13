@@ -213,11 +213,10 @@ int* health_probe(int index){
 
 /*
     Search thru the global 2d array of ports for 
-        a server w/ 0 entries
-        a server w/ least number of entries
-        or least number of entries AND least number of errors
+    * a server w/ 0 entries
+    * a server w/ least number of entries
+    * or least number of entries AND least number of errors
     return the index of the selected port
-    
 */
 int find_server(){
     //find the server w the min number of requests received to send this one to 
@@ -239,9 +238,9 @@ int find_server(){
 }
 
 /*
-    each worker thread gets a job
-        finds the best server to use
-        then sends the job to that server
+    * each worker thread gets a job
+    * finds the best server to use
+    * then sends the job to that server
 */
 void *worker_thread(){
     while(1){
@@ -307,13 +306,6 @@ int main(int argc,char **argv) {
     listenport = atoi(argv[optind]); //loadbalancer listens from first port
     optind += 1;
 
-    /*
-    idea: 
-        for each server port gotten
-            update the serverports array
-            call the thread function, letting them process requests independently
-    */
-
     for(; optind < argc; optind++){ //get all the ports from the command line
         serverports[portcounter][0] = atoi(argv[optind]); //first col the port number
         serverports[portcounter][1] = 0; //second col is the number of errors
@@ -337,6 +329,7 @@ int main(int argc,char **argv) {
         if ((acceptfd = accept(listenfd, NULL, NULL)) < 0) //accept a connection received from the first port
             err(1, "failed accepting");
         //printf("RECEIVED JoB %d\n", acceptfd);
+	    
         interval_counter += 1; //update number of requests received by load balancer, for interval HC purposes
         //printf(" - received %d requests so far\n", interval_counter);
 
@@ -353,13 +346,12 @@ int main(int argc,char **argv) {
         }
         
         sem_wait(&empty_sem); 
-		pthread_mutex_lock(&mutex); //lock the resources
+	pthread_mutex_lock(&mutex); //lock the resources
 
-		enqueue(job_queue, &tail, acceptfd); //add to queue
+	enqueue(job_queue, &tail, acceptfd); //add to queue
         //printf(" - %d added to job queue\n", acceptfd);
         
-		pthread_mutex_unlock(&mutex); //unlock
-		sem_post(&full_sem); //TALK TO THESE THREADS QUE
-
+	pthread_mutex_unlock(&mutex); //unlock
+	sem_post(&full_sem);
     }
 }
