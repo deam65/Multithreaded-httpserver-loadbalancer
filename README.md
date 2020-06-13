@@ -1,6 +1,6 @@
-# CSE-130: Principles of Complex Computer System Design
+# Multithreaded HTTP server and load balancer
 
-- This repo contains the most significant work I've completed during this course
+- This repo contains the most significant work I've completed during CSE-130 (Principles of Computer System Design)
 
 - I designed a multithreaded web server based on HTTP/1.1 protocol, which was able to process concurrent GET, PUT and HEAD requests. This server had the additional feature of logging hex-dumps, and support for health-checks using GET requests. After compiling, type "./httpserver [-l logfilename] [-N numthreads] (portnumber)" to run
 
