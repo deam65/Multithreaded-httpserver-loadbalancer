@@ -164,40 +164,6 @@ int processGET(int socket_FD, char* resource_name){
 		send(socket_FD, healthchecc, healthcheck_size, 0);
 		memset(healthchecc, 0, sizeof(healthchecc));
 		
-		// sem_wait(&log_sem);
-
-		// //log entry header
-		// char log_header[4000] = "";
-		// int log_header_bytes = sprintf(log_header, "GET /healthcheck length %d\n", len);
-		// write(log_FD, log_header, log_header_bytes);
-		// memset(log_header, 0, sizeof(log_header));
-
-		// //health check body (log errors and entries)
-		// char health_body[40] = ""; 
-		// sprintf(health_body, "%s%s", str_errors, str_entries); //make health body
-		
-		// unsigned char health_hex[100] = ""; //make buffer for the hex line
-		// unsigned char health_byte[20] = ""; //buffer for conversion
-		// sprintf(health_hex, "%08d", 0); //write counter to the buffer
-		// strcat(health_hex, health_byte);
-		// for(int i=0; i<strlen(health_body); i++){ //for each byte
-		// 	sprintf(health_byte, " %02x", health_body[i]); //convert to hex and write to buffer
-		// 	strcat(health_hex, health_byte);
-		// }
-		// write(log_FD, health_hex, strlen(health_hex));
-		// memset(health_byte, 0, sizeof(health_byte));
-		// memset(health_body, 0, sizeof(health_body));
-		// memset(health_hex, 0, sizeof(health_hex));
-
-		// //"========\n" to denote ending
-		// char log_end[20] = "";
-		// int log_end_size = sprintf(log_end, "\n========\n");
-		// write(log_FD, log_end, strlen(log_end));
-		// memset(log_end, 0, sizeof(log_end));
-
-		// log_entries += 1; // update counter after
-
-		// sem_post(&log_sem);
 		return 1;
 	}
 
@@ -554,7 +520,7 @@ int main(int argc, char** argv) {
 	//[make the threadpool]
     pthread_t thread_pool[n_threads]; //initialize thread pool
     for(long i=0; i<n_threads; i++){ //create n-threads in the thread pool
-        pthread_create(&thread_pool[i], NULL, &threadProcess, NULL); //MAKESURE FN THREADJOB MAKES THE THREAD SLEEP INITIALLY
+        pthread_create(&thread_pool[i], NULL, &threadProcess, NULL);
     }
 
     /*
@@ -570,12 +536,10 @@ int main(int argc, char** argv) {
 		// Remember errors happen
 		//printf("Client FD: %d\n", client_sockd);
 
-		//if buffer is full, wait
-
 		sem_wait(&empty_sem); 
 		pthread_mutex_lock(&mutex); //lock the resources
 		enqueue(job_queue, &tail, client_sockd); //add to queue
 		pthread_mutex_unlock(&mutex); //unlock
-		sem_post(&full_sem); //TALK TO THESE THREADS QUE
+		sem_post(&full_sem); 
 	}
 }
